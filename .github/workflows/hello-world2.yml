@@ -1,0 +1,17 @@
+name: Hello World
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master "]
+  workflow_dispatch:
+
+jobs:
+  one:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Print file
+        run: cat hello-world.txt
