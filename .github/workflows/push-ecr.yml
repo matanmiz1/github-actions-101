@@ -37,7 +37,5 @@ jobs:
         ECR_REPOSITORY: medstream-test-gh
         IMAGE_TAG: ${{ steps.vars.outputs.git_hash }}
       run: |
-        echo $ECR_REGISTRY
-        echo $IMAGE_TAG
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
