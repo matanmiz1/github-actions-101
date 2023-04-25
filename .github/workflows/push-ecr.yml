@@ -1,8 +1,8 @@
 name: Build and push Docker
 
 on:
-  push:
-    branches: [ "master" ]
+  # push:
+  #   branches: [ "master" ]
   workflow_dispatch:
 
 permissions:
@@ -38,7 +38,7 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: medstream-test-gh
+        ECR_REPOSITORY: test-gh
         IMAGE_TAG: ${{ steps.vars.outputs.git_hash }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
