@@ -1,0 +1,21 @@
+name: trigger callme
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  hello2:
+    name: hello2
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: say-hi
+      run: |
+        echo "HELLO2"
+  
+  trigger:
+    uses: ./.github/workflows/callme.yml
+    needs: hello2

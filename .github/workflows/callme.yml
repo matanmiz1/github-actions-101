@@ -1,0 +1,18 @@
+name: callme
+on:
+  workflow_call:
+    inputs:
+      hellostring:
+        description: Say hello
+        required: false
+        type: string
+
+jobs:
+  hello:
+    name: hello1
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: say-hi
+      run: |
+        echo "${{ inputs.hellostring }}"
