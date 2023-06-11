@@ -1,4 +1,4 @@
-name: trigger callme
+name: trigger trigger callme
 on:
   workflow_dispatch:
   push:
