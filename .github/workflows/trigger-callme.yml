@@ -1,5 +1,6 @@
 name: trigger callme
 on:
+  workflow_call:
   workflow_dispatch:
   push:
     branches:
