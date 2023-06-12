@@ -24,3 +24,8 @@ jobs:
     if: contains('refs/heads/master', github.ref)
     uses: ./.github/workflows/trigger-callme.yml
     needs: hello3
+
+  trigger-custom:
+    if: github.ref != 'refs/heads/master' && ! startsWith(github.ref, 'refs/heads/release/')
+    uses: ./.github/workflows/trigger-callme.yml
+    needs: hello3
