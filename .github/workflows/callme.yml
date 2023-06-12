@@ -21,3 +21,11 @@ jobs:
       if: "${{ inputs.hellostring == 'hello' }}"
       run: |
         echo "${{ inputs.hellostring }}"
+    
+    - name: print-condition
+      run: |
+        if [[ "${{ inputs.hellostring }}" == "hello" ]]; then
+          echo "true"
+        else
+          echo "false"
+        fi
