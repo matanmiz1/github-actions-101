@@ -19,3 +19,9 @@ jobs:
   trigger:
     uses: ./.github/workflows/callme.yml
     needs: hello2
+  
+  triggerhello:
+    uses: ./.github/workflows/callme.yml
+    needs: hello2
+    with:
+      hellostring: "hello"

@@ -16,3 +16,8 @@ jobs:
     - name: say-hi
       run: |
         echo "HELLO1"
+    
+    - name: print-input
+      if: "${{ input.hellostring == 'hello' }}""
+      run: |
+        echo "${{ input.hellostring }}"
