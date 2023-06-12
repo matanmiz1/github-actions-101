@@ -15,7 +15,12 @@ jobs:
       run: |
         echo "HELLO3"
   
-  trigger:
+  trigger-master:
     if: contains('refs/heads/release', github.ref)
+    uses: ./.github/workflows/trigger-callme.yml
+    needs: hello3
+  
+  trigger-master:
+    if: contains('refs/heads/rmaster', github.ref)
     uses: ./.github/workflows/trigger-callme.yml
     needs: hello3
