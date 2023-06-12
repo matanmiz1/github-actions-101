@@ -21,6 +21,6 @@ jobs:
     needs: hello3
   
   trigger-master:
-    if: contains('refs/heads/rmaster', github.ref)
+    if: contains('refs/heads/master', github.ref)
     uses: ./.github/workflows/trigger-callme.yml
     needs: hello3
