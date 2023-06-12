@@ -30,6 +30,8 @@ jobs:
   
   triggerhello:
     uses: ./.github/workflows/callme.yml
+    # Run even if one skipped
+    if: ${{ always() }} 
     needs: [ trigger, sleep ]
     with:
       hellostring: "hello"
