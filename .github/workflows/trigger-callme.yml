@@ -18,10 +18,18 @@ jobs:
   
   trigger:
     uses: ./.github/workflows/callme.yml
+    if: startsWith(github.ref, 'refs/heads/release/')
     needs: hello2
+
+  sleep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: wait 30
+        run: |
+          sleep 30
   
   triggerhello:
     uses: ./.github/workflows/callme.yml
-    needs: hello2
+    needs: [ trigger, sleep ]
     with:
       hellostring: "hello"
