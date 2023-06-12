@@ -16,5 +16,6 @@ jobs:
         echo "HELLO3"
   
   trigger:
+    if: contains('refs/heads/release', github.ref)
     uses: ./.github/workflows/trigger-callme.yml
     needs: hello3
