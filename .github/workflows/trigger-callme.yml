@@ -16,7 +16,7 @@ jobs:
       run: |
         echo "HELLO2"
   
-  trigger:
+  trigger-if-release-branch:
     uses: ./.github/workflows/callme.yml
     if: startsWith(github.ref, 'refs/heads/release/')
     needs: hello2
@@ -27,11 +27,20 @@ jobs:
       - name: wait 30
         run: |
           sleep 30
+
+  fail-on-purpose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: fail
+        run: |
+          exit 1
   
+  # Fail the previous
+  # Skip
   triggerhello:
     uses: ./.github/workflows/callme.yml
     # Run even if one skipped
-    if: ${{ always() }} 
+    if: ${{ ! failure() }} 
     needs: [ trigger, sleep ]
     with:
       hellostring: "hello"
