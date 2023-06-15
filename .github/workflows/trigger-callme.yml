@@ -35,12 +35,10 @@ jobs:
         run: |
           exit 1
   
-  # Fail the previous
-  # Skip
-  triggerhello:
+  run-on-depends:
     uses: ./.github/workflows/callme.yml
     # Run even if one skipped
-    if: ${{ ! failure() }} 
-    needs: [ trigger, sleep ]
+    if: ${{ always() }} 
+    needs: [ trigger-if-release-branch, sleep ]
     with:
       hellostring: "hello"
