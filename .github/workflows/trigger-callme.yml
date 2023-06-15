@@ -35,11 +35,10 @@ jobs:
         run: |
           exit 1
   
-  # Fail -> should not run
   run-on-depends:
     if: always() && !contains(needs.*.result, 'failure')
-    # needs: [ trigger-if-release-branch, sleep, fail-on-purpose ]
-    needs: [ trigger-if-release-branch, sleep]
+    needs: [ trigger-if-release-branch, sleep, fail-on-purpose ]
+    # needs: [ trigger-if-release-branch, sleep]
     runs-on: ubuntu-latest
     steps:
       - name: run
