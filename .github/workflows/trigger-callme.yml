@@ -37,8 +37,7 @@ jobs:
   
   run-on-depends:
     uses: ./.github/workflows/callme.yml
-    # Run even if one skipped
     if: ${{ always() }} 
-    needs: [ trigger-if-release-branch, sleep ]
+    needs: [ trigger-if-release-branch, sleep, fail-on-purpose ]
     with:
       hellostring: "hello"
