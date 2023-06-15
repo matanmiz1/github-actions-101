@@ -28,17 +28,19 @@ jobs:
         run: |
           sleep 10
 
-  fail-on-purpose:
-    runs-on: ubuntu-latest
-    steps:
-      - name: fail
-        run: |
-          exit 1
+  # fail-on-purpose:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: fail
+  #       run: |
+  #         exit 1
   
+  # Fail -> should not run
   run-on-depends:
     uses: ./.github/workflows/callme.yml
     if: always() && !contains(needs.*.result, 'failure')
-    needs: [ trigger-if-release-branch, sleep, fail-on-purpose ]
+    # needs: [ trigger-if-release-branch, sleep, fail-on-purpose ]
+    needs: [ trigger-if-release-branch, sleep]
     with:
       hellostring: "hello"
 
