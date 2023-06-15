@@ -37,19 +37,13 @@ jobs:
   
   # Fail -> should not run
   run-on-depends:
-    uses: ./.github/workflows/callme.yml
     if: always() && !contains(needs.*.result, 'failure')
     needs: [ trigger-if-release-branch, sleep, fail-on-purpose ]
     # needs: [ trigger-if-release-branch, sleep]
-    with:
-      hellostring: "hello"
-
-  debug-print:
-    needs: [run-on-depends]
-    if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: run
+        run: |
           echo "toJSON(needs) = ${{ toJSON(needs) }}"
           echo "toJSON(needs.*.result) = ${{ toJSON(needs.*.result) }}"
           echo "!contains(needs.*.result, 'skipped') = ${{ !contains(needs.*.result, 'skipped') }}"
