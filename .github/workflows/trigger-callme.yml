@@ -38,10 +38,10 @@ jobs:
       - name: Get time upon failure
         if: ${{ failure() }}
         id: time
-        uses: nanzm/get-time-action@master
+        uses: josStorer/get-current-time@v2
         with:
-          timeZone: UTC+3
-          format: 'HH-mm-ss | YYYY-MM-DD'
+          utcOffset: "+03:00"
+          format: 'HH:mm:ss | DD/MM/YYYY'
     
       - name: Send slack upon failure
         if: ${{ failure() }}
@@ -80,7 +80,7 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*When:*\n${{ steps.time.outputs.time }}"
+                      "text": "*When:*\n${{ steps.time.outputs.formattedTime }}"
                     }
                   ]
                 },
