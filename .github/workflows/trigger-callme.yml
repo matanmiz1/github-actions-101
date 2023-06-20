@@ -35,6 +35,14 @@ jobs:
         run: |
           exit 1
 
+      - name: Get time upon failure
+        if: ${{ failure() }}
+        id: time
+        uses: nanzm/get-time-action@master
+        with:
+          timeZone: UTC+3
+          format: 'HH-mm-ss | YYYY-MM-DD'
+    
       - name: Send slack upon failure
         if: ${{ failure() }}
         uses: slackapi/slack-github-action@v1.24.0
@@ -44,6 +52,7 @@ jobs:
         with:
           payload: |
             {
+              "text": "GitHub Action build result: ${{ job.status }}\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
               "blocks": [
                 {
                   "type": "header",
@@ -58,7 +67,7 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Branch:*\n<${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}|${{ github.ref_name }}>"
+                      "text": "*Branch:*\<${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}|${{ github.ref_name }}>"
                     },
                     {
                       "type": "mrkdwn",
@@ -71,7 +80,7 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*When:*\ntimestamp"
+                      "text": "*When:*\n${{ steps.time.outputs.time }}"
                     }
                   ]
                 },
