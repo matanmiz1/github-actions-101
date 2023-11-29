@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: fail
         run: |
-          exit 0
+          exit 1
         
   slack:
     if: ${{ always() && contains(needs.*.result, 'failure') }}
