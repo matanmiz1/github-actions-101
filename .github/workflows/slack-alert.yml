@@ -6,10 +6,9 @@ on:
       header_text:
         required: true
         type: string
-      # TODO: sensitive
-      # slack_webhook_url:
-      #   required: true
-      #   type: string
+    secrets:
+      slack_webhook_url:
+        required: true
 
 jobs:
   notify:
