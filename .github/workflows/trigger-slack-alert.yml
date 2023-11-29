@@ -7,17 +7,13 @@ on:
         required: true
         type: string
 
-permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read  # This is required for actions/checkout
-
 jobs:
   fail-on-purpose:
     runs-on: ubuntu-latest
     steps:
       - name: fail
         run: |
-          exit 1
+          exit 0
         
   slack:
     if: ${{ always() && contains(needs.*.result, 'failure') }}
