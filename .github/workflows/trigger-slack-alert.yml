@@ -4,11 +4,11 @@ on:
     branches:
       - master
   workflow_dispatch:
-    inputs:
-      repo:
-        description: param
-        required: true
-        type: string
+    # inputs:
+    #   repo:
+    #     description: param
+    #     required: true
+    #     type: string
 
 permissions:
   id-token: write # This is required for requesting the JWT
