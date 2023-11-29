@@ -20,7 +20,8 @@ jobs:
           exit 1
         
   slack:
-    if: ${{ failure() }}
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    needs: [fail-on-purpose]
     uses: ./.github/workflows/slack-alert.yml
     with:
       header_text: ${{ inputs.repo }}
