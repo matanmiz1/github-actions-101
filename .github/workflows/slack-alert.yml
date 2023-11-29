@@ -7,9 +7,9 @@ on:
         required: true
         type: string
       # TODO: sensitive
-      slack_webhook_url:
-        required: true
-        type: string
+      # slack_webhook_url:
+      #   required: true
+      #   type: string
 
 jobs:
   notify:
@@ -25,7 +25,7 @@ jobs:
       - name: Send slack notification
         uses: slackapi/slack-github-action@v1.24.0
         env:
-          SLACK_WEBHOOK_URL: "${{ inputs.slack_webhook_url }}"
+          SLACK_WEBHOOK_URL: "${{ secrets.slack_webhook_url }}"
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         with:
           payload: |
