@@ -17,8 +17,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+
     - name: Send slack upon failure
       uses: ./.github/workflows/slack-alert.yml
       with:
         header_text: "Build image to ${{ inputs.repo }} failed"
         slack_webhook_url: ${{ secrets.VERY_IMPORTANT_SECRET }}
+
+# jobs:
+#   fail-on-purpose:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: fail
+#         run: |
+#           exit 1
+        
+#   slack-notification:
+
+
+
