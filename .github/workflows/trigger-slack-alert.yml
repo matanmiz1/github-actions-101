@@ -11,30 +11,33 @@ permissions:
   id-token: write # This is required for requesting the JWT
   contents: read  # This is required for actions/checkout
 
-jobs:
-  triggerSlack:
-    name: trigger-slack
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Check out code
-      uses: actions/checkout@v4
-
-    - name: Send slack upon failure
-      uses: ./.github/workflows/slack-alert.yml
-      with:
-        header_text: "Build image to ${{ inputs.repo }} failed"
-        slack_webhook_url: ${{ secrets.VERY_IMPORTANT_SECRET }}
-
 # jobs:
-#   fail-on-purpose:
+#   triggerSlack:
+#     name: trigger-slack
 #     runs-on: ubuntu-latest
+
 #     steps:
-#       - name: fail
-#         run: |
-#           exit 1
+#     - name: Check out code
+#       uses: actions/checkout@v4
+
+#     - name: Send slack upon failure
+#       uses: ./.github/workflows/slack-alert.yml
+#       with:
+#         header_text: "Build image to ${{ inputs.repo }} failed"
+#         slack_webhook_url: ${{ secrets.VERY_IMPORTANT_SECRET }}
+
+jobs:
+  fail-on-purpose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: fail
+        run: |
+          exit 1
         
-#   slack-notification:
-
-
+  trigger-build-medstream-dev-builder:
+    if: ${{ failure() }}
+    uses: ./.github/workflows/slack-alert.yml
+    with:
+      repo: ${{ inputs.repo }}
+      slack_webhook_url: ${{ secrets.VERY_IMPORTANT_SECRET }}
 
