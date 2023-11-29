@@ -2,9 +2,9 @@ name: trigger callme
 on:
   workflow_call:
   workflow_dispatch:
-  push:
-    branches:
-      - master
+  # push:
+  #   branches:
+  #     - master
 
 jobs:
   hello2:

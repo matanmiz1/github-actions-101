@@ -1,6 +1,6 @@
 name: Trigger slack alert
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       repo:
         description: param
