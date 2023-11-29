@@ -1,0 +1,24 @@
+name: Trigger slack alert
+on:
+  workflow_call:
+    inputs:
+      repo:
+        description: param
+        required: true
+        type: string
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+jobs:
+  triggerSlack:
+    name: trigger-slack
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Send slack upon failure
+      uses: ./.github/workflows/slack-alert.yml
+      with:
+        header_text: "Build image to ${{ inputs.repo }} failed"
+        slack_webhook_url: ${{ secrets.VERY_IMPORTANT_SECRET }}
