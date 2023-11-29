@@ -23,6 +23,6 @@ jobs:
     if: ${{ failure() }}
     uses: ./.github/workflows/slack-alert.yml
     with:
-      repo: ${{ inputs.repo }}
+      header_text: ${{ inputs.repo }}
     secrets:
       slack_webhook_url: ${{ secrets.VERY_IMPORTANT_SECRET }}
