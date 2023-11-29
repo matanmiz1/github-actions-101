@@ -20,6 +20,6 @@ jobs:
     needs: [fail-on-purpose]
     uses: ./.github/workflows/slack-alert.yml
     with:
-      header_text: ${{ inputs.repo }}
+      header_text: TEST ${{ inputs.repo }}
     secrets:
-      slack_webhook_url: ${{ secrets.VERY_IMPORTANT_SECRET }}
+      slack_webhook_url: ${{ secrets.RD_XDOME_DOCKER_BUILD_ERRORS_SLACK_WEBHOOK_URL }}
