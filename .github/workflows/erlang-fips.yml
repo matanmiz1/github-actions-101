@@ -22,14 +22,14 @@ jobs:
           repository: erlang/otp
           ref: OTP-26.2.5.4
           fetch-depth: 1
-          path: /tmp/erlang-sources
+          path: erlang-sources
       - name: Checkout debian packages
         uses: actions/checkout@v4
         with:
           repository: rabbitmq/erlang-debian-package
           ref: OTP-26.x/ubuntu/22.04
           fetch-depth: 1
-          path: /tmp/otp
+          path: otp
       - name: Install packages
         run: |
           apt-get update
