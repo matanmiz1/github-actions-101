@@ -1,0 +1,83 @@
+name: Build erlang with FIPS
+on:
+  workflow_dispatch:
+
+
+###
+#  Build erlang with FIPS enabled
+#  This action is based on xDome similar process and the following:
+#  https://github.com/rabbitmq/erlang-debian-package/blob/OTP-26.x/ubuntu/22.04/.github/workflows/test-ubuntu-jammy.yaml
+#  
+###
+
+jobs:
+  build:
+    container:
+      image: ubuntu:jammy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout otp
+        uses: actions/checkout@v4
+        with:
+          repository: erlang/otp
+          ref: OTP-26.2.5.4
+          fetch-depth: 1
+          path: /tmp/erlang-sources
+      - name: Checkout debian packages
+        uses: actions/checkout@v4
+        with:
+          repository: rabbitmq/erlang-debian-package
+          ref: OTP-26.x/ubuntu/22.04
+          fetch-depth: 1
+          path: /tmp/otp
+      - name: Install packages
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates git wget \
+            make g++ pkg-config ncurses-dev gcc libssl-dev 
+
+      - name: Install openssl-fips
+        run: |
+          # Debugging
+          set -x
+
+          # Exit immediately if a command exists with a non-zero status
+          set -e
+
+          # Treat unset variables as an error when substituting.
+          set -u
+          
+          # Install openssl with fips enabled
+          cd /tmp
+          wget https://www.openssl.org/source/openssl-3.0.9.tar.gz
+          tar -xf openssl-3.0.9.tar.gz
+          cd openssl-3.0.9
+          ./Configure enable-fips
+          make
+          make install
+
+          ln -sf /usr/local/lib64/libcrypto.so.3 /lib/x86_64-linux-gnu/libcrypto.so.3
+          ln -sf /usr/local/lib64/libssl.so.3 /lib/x86_64-linux-gnu/libssl.so.3
+          
+          # Config fips
+          export OPENSSL_CNF="/usr/local/ssl/openssl.cnf"
+          export FIPSMODULE_CNF="/usr/local/ssl/fipsmodule.cnf"
+                ##### TODO: change to base instead of default ?
+          sed -i '/^\[provider_sect\]/,/^\[/ s/# fips = fips_sect/fips = fips_sect/' "$OPENSSL_CNF"
+          sed -i '/^\[default_sect\]/,/^\[/ s/# activate = 1/activate = 1/' "$OPENSSL_CNF"
+          echo ".include /usr/local/ssl/fipsmodule.cnf" >> $OPENSSL_CNF
+
+          # Verify that fips is enabled
+          openssl list -providers
+
+      - name: Build erlang
+        run: |
+          set -eux
+
+          cd /tmp
+          ls -l
+          cd /tmp/otp
+          ls -l
+          cd /tmp/erlang-sources
+          ls -l
