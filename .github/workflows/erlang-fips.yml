@@ -20,6 +20,8 @@ jobs:
       image: ubuntu:jammy
     runs-on: ubuntu-latest
     steps:
+      - name: Set Git Discovery Across Filesystem
+        run: echo "GIT_DISCOVERY_ACROSS_FILESYSTEM=1" >> $GITHUB_ENV
       - name: Checkout otp
         uses: actions/checkout@v4
         with:
@@ -42,7 +44,6 @@ jobs:
           apt-get install -y --no-install-recommends \
             ca-certificates git wget \
             make g++ pkg-config ncurses-dev gcc libssl-dev 
-          echo "GIT_DISCOVERY_ACROSS_FILESYSTEM=1" >> $GITHUB_ENV
 
       - name: Build erlang
         run: |
