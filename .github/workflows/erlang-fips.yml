@@ -88,15 +88,18 @@ jobs:
           branch=erlang-debian-package-by-rabbitmq
           git checkout -b "$branch"
 
+          # Configure git-buildpackage
           cat > ~/.gbp.conf <<EOF
           [DEFAULT]
           upstream-tag = $ERLANG_TAG_VERSION
           EOF
 
+          # Remove non-free documentation
           for fn in $(find lib/*/doc -name standard -or -name archive); do
               rm -rf "$fn"
           done
 
+          # Build package
           mk-build-deps -i -t 'apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends -y'
           rm -f erlang-build-deps*
 
