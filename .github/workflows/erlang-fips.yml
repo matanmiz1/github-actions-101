@@ -77,6 +77,7 @@ jobs:
           git clone --depth 1 --branch ${{ env.ERLANG_TAG_VERSION }} https://github.com/erlang/otp.git
           git clone --branch ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }} https://github.com/rabbitmq/erlang-debian-package.git
 
+          # Checkout specific commit to be aligned with the otp version
           cd erlang-debian-package
           git checkout $ERLANG_DEBIAN_PACKAGE_COMMIT
           cd ..
