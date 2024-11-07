@@ -13,7 +13,7 @@ on:
 env:
   ERLANG_TAG_VERSION: OTP-26.2.5.4
   ERLANG_DEBIAN_PACKAGE_TAG_VERSION: OTP-26.x/ubuntu/22.04
-
+  ERLANG_DEBIAN_PACKAGE_COMMIT: 3fbf92ec309069f737eb1f3fb9e610531a931274
 jobs:
   build-erlang:
     container:
@@ -69,10 +69,13 @@ jobs:
           # Config fips
           export OPENSSL_CNF="/usr/local/ssl/openssl.cnf"
           export FIPSMODULE_CNF="/usr/local/ssl/fipsmodule.cnf"
-                ##### TODO: change to base instead of default ?
-          sed -i '/^\[provider_sect\]/,/^\[/ s/# fips = fips_sect/fips = fips_sect/' "$OPENSSL_CNF"
-          sed -i '/^\[default_sect\]/,/^\[/ s/# activate = 1/activate = 1/' "$OPENSSL_CNF"
-          echo ".include /usr/local/ssl/fipsmodule.cnf" >> $OPENSSL_CNF
+
+          sed -i "/^\[openssl_init\]/i\\.include ${FIPSMODULE_CNF}\n" "$OPENSSL_CNF"
+          sed -i '/^providers = provider_sect/a\alg_section = algorithm_sect' "$OPENSSL_CNF"
+          sed -i 's/^\(default = default_sect\)/# \1/' "$OPENSSL_CNF"
+          sed -i 's/^# fips = fips_sect/fips = fips_sect/' "$OPENSSL_CNF"
+          sed -i '/^fips = fips_sect/a\base = base_sect' "$OPENSSL_CNF"
+          sed -i '/^base = base_sect/a\\n[base_sect]\nactivate = 1\n\n[algorithm_sect]\ndefault_properties = fips=yes' "$OPENSSL_CNF"
 
           # Verify that fips is enabled
           openssl list -providers
@@ -87,7 +90,11 @@ jobs:
           
           # This was supposed to be in action/checkout@v4 but the action doesn't init .git
           git clone --depth 1 --branch ${{ env.ERLANG_TAG_VERSION }} https://github.com/erlang/otp.git
-          git clone --depth 1 --branch ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }} https://github.com/rabbitmq/erlang-debian-package.git
+          git clone --branch ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }} https://github.com/rabbitmq/erlang-debian-package.git
+
+          cd erlang-debian-package
+          git checkout $ERLANG_DEBIAN_PACKAGE_COMMIT
+          cd ..
 
           dist_version=debian-$(cat /etc/debian_version)
           cp -a erlang-debian-package/debian otp/
@@ -119,9 +126,10 @@ jobs:
           pwd
           ls -la
 
-      - name: Upload tar.gz as artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
         with:
+          name: erlang-artifacts-fips
           path: |
             erlang-*.deb
             erlang-*.ddeb
