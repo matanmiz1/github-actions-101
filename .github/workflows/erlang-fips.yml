@@ -25,7 +25,7 @@ jobs:
         with:
           repository: erlang/otp
           ref: ${{ env.ERLANG_TAG_VERSION }}
-          fetch-depth: 0
+          fetch-depth: 1
           path: otp
 
       - name: Checkout debian packages
@@ -33,7 +33,7 @@ jobs:
         with:
           repository: rabbitmq/erlang-debian-package
           ref: ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }}
-          fetch-depth: 0
+          fetch-depth: 1
           path: erlang-debian-package
 
       - name: Install packages
@@ -42,7 +42,7 @@ jobs:
           apt-get install -y --no-install-recommends \
             ca-certificates git wget \
             make g++ pkg-config ncurses-dev gcc libssl-dev 
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          echo "GIT_DISCOVERY_ACROSS_FILESYSTEM=1" >> $GITHUB_ENV
 
       - name: Build erlang
         run: |
