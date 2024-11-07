@@ -25,7 +25,7 @@ jobs:
         with:
           repository: erlang/otp
           ref: ${{ env.ERLANG_TAG_VERSION }}
-          fetch-depth: 0
+          fetch-depth: 1
           path: otp
 
       - name: Checkout debian packages
@@ -43,40 +43,6 @@ jobs:
             ca-certificates git wget \
             make g++ pkg-config ncurses-dev gcc libssl-dev 
 
-      - name: Install openssl-fips
-        run: |
-          # Debugging
-          set -x
-
-          # Exit immediately if a command exists with a non-zero status
-          set -e
-
-          # Treat unset variables as an error when substituting.
-          set -u
-          
-          # Install openssl with fips enabled
-          cd /tmp
-          wget https://www.openssl.org/source/openssl-3.0.9.tar.gz
-          tar -xf openssl-3.0.9.tar.gz
-          cd openssl-3.0.9
-          ./Configure enable-fips
-          make
-          make install
-
-          ln -sf /usr/local/lib64/libcrypto.so.3 /lib/x86_64-linux-gnu/libcrypto.so.3
-          ln -sf /usr/local/lib64/libssl.so.3 /lib/x86_64-linux-gnu/libssl.so.3
-          
-          # Config fips
-          export OPENSSL_CNF="/usr/local/ssl/openssl.cnf"
-          export FIPSMODULE_CNF="/usr/local/ssl/fipsmodule.cnf"
-                ##### TODO: change to base instead of default ?
-          sed -i '/^\[provider_sect\]/,/^\[/ s/# fips = fips_sect/fips = fips_sect/' "$OPENSSL_CNF"
-          sed -i '/^\[default_sect\]/,/^\[/ s/# activate = 1/activate = 1/' "$OPENSSL_CNF"
-          echo ".include /usr/local/ssl/fipsmodule.cnf" >> $OPENSSL_CNF
-
-          # Verify that fips is enabled
-          openssl list -providers
-
       - name: Build erlang
         run: |
           set -eux
@@ -91,6 +57,9 @@ jobs:
           dist_version=debian-$(cat /etc/debian_version)
           cp -a erlang-debian-package/debian otp/
           cd otp/
+
+          # TODO: delete
+          ls -la
 
           branch=erlang-debian-package-by-rabbitmq
           git checkout -b "$branch"
@@ -117,3 +86,38 @@ jobs:
           cd ..
           ls -l
       # Export to cache?
+
+
+      # - name: Install openssl-fips
+      #   run: |
+      #     # Debugging
+      #     set -x
+
+      #     # Exit immediately if a command exists with a non-zero status
+      #     set -e
+
+      #     # Treat unset variables as an error when substituting.
+      #     set -u
+          
+      #     # Install openssl with fips enabled
+      #     cd /tmp
+      #     wget https://www.openssl.org/source/openssl-3.0.9.tar.gz
+      #     tar -xf openssl-3.0.9.tar.gz
+      #     cd openssl-3.0.9
+      #     ./Configure enable-fips
+      #     make
+      #     make install
+
+      #     ln -sf /usr/local/lib64/libcrypto.so.3 /lib/x86_64-linux-gnu/libcrypto.so.3
+      #     ln -sf /usr/local/lib64/libssl.so.3 /lib/x86_64-linux-gnu/libssl.so.3
+          
+      #     # Config fips
+      #     export OPENSSL_CNF="/usr/local/ssl/openssl.cnf"
+      #     export FIPSMODULE_CNF="/usr/local/ssl/fipsmodule.cnf"
+      #           ##### TODO: change to base instead of default ?
+      #     sed -i '/^\[provider_sect\]/,/^\[/ s/# fips = fips_sect/fips = fips_sect/' "$OPENSSL_CNF"
+      #     sed -i '/^\[default_sect\]/,/^\[/ s/# activate = 1/activate = 1/' "$OPENSSL_CNF"
+      #     echo ".include /usr/local/ssl/fipsmodule.cnf" >> $OPENSSL_CNF
+
+      #     # Verify that fips is enabled
+      #     openssl list -providers
