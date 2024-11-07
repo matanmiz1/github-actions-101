@@ -42,6 +42,7 @@ jobs:
           apt-get install -y --no-install-recommends \
             ca-certificates git wget \
             make g++ pkg-config ncurses-dev gcc libssl-dev 
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Build erlang
         run: |
