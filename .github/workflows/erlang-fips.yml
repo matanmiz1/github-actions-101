@@ -11,7 +11,7 @@ on:
 ###
 
 jobs:
-  build:
+  build-erlang:
     container:
       image: ubuntu:jammy
     runs-on: ubuntu-latest
@@ -75,9 +75,10 @@ jobs:
         run: |
           set -eux
 
-          cd /tmp
           ls -l
-          cd /tmp/otp
+          ## TODO: where is it ?
+          cd otp
           ls -l
-          cd /tmp/erlang-sources
+          cd ..
+          cd erlang-sources
           ls -l
