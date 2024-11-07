@@ -16,26 +16,29 @@ jobs:
       image: ubuntu:jammy
     runs-on: ubuntu-latest
     steps:
+      # - name: Setup
+      #   run: |
+      #     a="aaa"
       - name: Checkout otp
         uses: actions/checkout@v4
         with:
           repository: erlang/otp
           ref: OTP-26.2.5.4
           fetch-depth: 1
-          # path: otp
+          path: otp
       - name: Checkout debian packages
         uses: actions/checkout@v4
         with:
           repository: rabbitmq/erlang-debian-package
           ref: OTP-26.x/ubuntu/22.04
           fetch-depth: 1
-          # path: erlang-debian-package
-      - name: Install packages
-        run: |
-          apt-get update
-          apt-get install -y --no-install-recommends \
-            ca-certificates git wget \
-            make g++ pkg-config ncurses-dev gcc libssl-dev 
+          path: erlang-debian-package
+      # - name: Install packages
+      #   run: |
+      #     apt-get update
+      #     apt-get install -y --no-install-recommends \
+      #       ca-certificates git wget \
+      #       make g++ pkg-config ncurses-dev gcc libssl-dev 
 
       - name: Build erlang
         run: |
