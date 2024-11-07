@@ -20,23 +20,21 @@ jobs:
       image: ubuntu:jammy
     runs-on: ubuntu-latest
     steps:
-      - name: Set Git Discovery Across Filesystem
-        run: echo "GIT_DISCOVERY_ACROSS_FILESYSTEM=1" >> $GITHUB_ENV
-      - name: Checkout otp
-        uses: actions/checkout@v4
-        with:
-          repository: erlang/otp
-          ref: ${{ env.ERLANG_TAG_VERSION }}
-          fetch-depth: 1
-          path: otp
+      # - name: Checkout otp
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: erlang/otp
+      #     ref: ${{ env.ERLANG_TAG_VERSION }}
+      #     fetch-depth: 1
+      #     path: otp
 
-      - name: Checkout debian packages
-        uses: actions/checkout@v4
-        with:
-          repository: rabbitmq/erlang-debian-package
-          ref: ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }}
-          fetch-depth: 1
-          path: erlang-debian-package
+      # - name: Checkout debian packages
+      #   uses: actions/checkout@v4
+      #   with:
+      #     repository: rabbitmq/erlang-debian-package
+      #     ref: ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }}
+      #     fetch-depth: 1
+      #     path: erlang-debian-package
 
       - name: Install packages
         run: |
@@ -53,8 +51,9 @@ jobs:
 
           apt-get install -y build-essential devscripts equivs gnupg rsync git-buildpackage
           
-          # git clone --depth 1 --branch ${{ env.ERLANG_TAG_VERSION }} https://github.com/erlang/otp.git
-          # git clone --depth 1 --branch ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }} https://github.com/rabbitmq/erlang-debian-package.git
+          # This was supposed to be in action/checkout@v4 but the action doesn't init .git
+          git clone --depth 1 --branch ${{ env.ERLANG_TAG_VERSION }} https://github.com/erlang/otp.git
+          git clone --depth 1 --branch ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }} https://github.com/rabbitmq/erlang-debian-package.git
 
           # TODO: delete
           ls -la
