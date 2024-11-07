@@ -20,15 +20,11 @@ jobs:
       image: ubuntu:jammy
     runs-on: ubuntu-latest
     steps:
-      # - name: Setup
-      #   run: |
-      #     a="aaa"
-
       - name: Checkout otp
         uses: actions/checkout@v4
         with:
           repository: erlang/otp
-          ref: $ERLANG_TAG_VERSION
+          ref: ${{ env.ERLANG_TAG_VERSION }}
           fetch-depth: 1
           path: otp
 
@@ -36,7 +32,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: rabbitmq/erlang-debian-package
-          ref: $ERLANG_DEBIAN_PACKAGE_TAG_VERSION
+          ref: ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }}
           fetch-depth: 1
           path: erlang-debian-package
 
