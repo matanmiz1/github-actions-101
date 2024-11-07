@@ -8,6 +8,14 @@ on:
 
 #  This action is based on xDome similar process and the following:
 #  https://github.com/rabbitmq/erlang-debian-package/blob/OTP-26.x/ubuntu/22.04/.github/workflows/test-ubuntu-jammy.yaml
+
+#  Docs:
+#  https://github.com/openssl/openssl/blob/master/INSTALL.md
+#  https://github.com/openssl/openssl/blob/master/README-FIPS.md
+#  https://docs.openssl.org/master/man7/fips_module
+#  https://www.erlang.org/doc/apps/crypto/fips.html
+#  https://github.com/erlang/otp/blob/OTP-26.2.5.4/HOWTO/INSTALL.md
+
 ###
 
 env:
