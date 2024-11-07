@@ -10,6 +10,10 @@ on:
 #  
 ###
 
+env:
+  ERLANG_TAG_VERSION: OTP-26.2.5.4
+  ERLANG_DEBIAN_PACKAGE_TAG_VERSION: OTP-26.x/ubuntu/22.04
+
 jobs:
   build-erlang:
     container:
@@ -19,42 +23,30 @@ jobs:
       # - name: Setup
       #   run: |
       #     a="aaa"
+
       - name: Checkout otp
         uses: actions/checkout@v4
         with:
           repository: erlang/otp
-          ref: OTP-26.2.5.4
+          ref: $ERLANG_TAG_VERSION
           fetch-depth: 1
           path: otp
+
       - name: Checkout debian packages
         uses: actions/checkout@v4
         with:
           repository: rabbitmq/erlang-debian-package
-          ref: OTP-26.x/ubuntu/22.04
+          ref: $ERLANG_DEBIAN_PACKAGE_TAG_VERSION
           fetch-depth: 1
           path: erlang-debian-package
-      # - name: Install packages
-      #   run: |
-      #     apt-get update
-      #     apt-get install -y --no-install-recommends \
-      #       ca-certificates git wget \
-      #       make g++ pkg-config ncurses-dev gcc libssl-dev 
 
-      - name: Build erlang
+      - name: Install packages
         run: |
-          set -eux
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            ca-certificates git wget \
+            make g++ pkg-config ncurses-dev gcc libssl-dev 
 
-          pwd
-          ls -l
-          
-          cd otp
-          pwd
-          ls -l
-          cd ..
-
-          cd erlang-debian-package
-          pwd
-          ls -l
       - name: Install openssl-fips
         run: |
           # Debugging
@@ -89,3 +81,43 @@ jobs:
           # Verify that fips is enabled
           openssl list -providers
 
+      - name: Build erlang
+        run: |
+          set -eux
+
+          export DEBIAN_FRONTEND=noninteractive
+
+          apt-get install -y build-essential devscripts equivs gnupg rsync git-buildpackage
+          
+          # TODO: delete
+          ls -l
+
+          dist_version=debian-$(cat /etc/debian_version)
+          cp -a erlang-debian-package/debian otp/
+          cd otp/
+
+          branch=erlang-debian-package-by-rabbitmq
+          git checkout -b "$branch"
+
+          cat > ~/.gbp.conf <<EOF
+          [DEFAULT]
+          upstream-tag = $ERLANG_TAG_VERSION
+          EOF
+
+          for fn in $(find lib/*/doc -name standard -or -name archive); do
+              rm -rf "$fn"
+          done
+
+          mk-build-deps -i -t 'apt-get -o Debug::pkgProblemResolver=yes --no-install-recommends -y'
+          rm -f erlang-build-deps*
+
+          sed -i -E 's/(\s+)--prefix=/\1--enable-fips --prefix=/' debian/rules
+
+          gbp buildpackage \
+            --git-ignore-new \
+            --git-debian-branch="$branch" \
+            --no-sign | tee /tmp/erlang-build.logs
+
+          cd ..
+          ls -l
+      # Export to cache?
