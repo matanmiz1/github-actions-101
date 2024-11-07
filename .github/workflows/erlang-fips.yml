@@ -37,6 +37,21 @@ jobs:
             ca-certificates git wget \
             make g++ pkg-config ncurses-dev gcc libssl-dev 
 
+      - name: Build erlang
+        run: |
+          set -eux
+
+          pwd
+          ls -l
+          
+          cd otp
+          pwd
+          ls -l
+          cd ..
+
+          cd erlang-debian-package
+          pwd
+          ls -l
       - name: Install openssl-fips
         run: |
           # Debugging
@@ -71,18 +86,3 @@ jobs:
           # Verify that fips is enabled
           openssl list -providers
 
-      - name: Build erlang
-        run: |
-          set -eux
-
-          pwd
-          ls -l
-          
-          cd otp
-          pwd
-          ls -l
-          cd ..
-
-          cd erlang-debian-package
-          pwd
-          ls -l
