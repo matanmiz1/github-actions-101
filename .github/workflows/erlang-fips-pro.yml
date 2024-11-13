@@ -1,4 +1,4 @@
-name: Build erlang with FIPS
+name: Build erlang with FIPS (pro)
 on:
   workflow_dispatch:
 
@@ -35,33 +35,25 @@ jobs:
             ca-certificates git wget \
             make g++ pkg-config ncurses-dev gcc libssl-dev 
 
+      - name: Enable ubuntu-pro
+        run: |
+          export DEBIAN_FRONTEND="noninteractive"
+
+          apt-get install -y --no-install-recommends ubuntu-advantage-tools
+
+          pro attach ${{ secrets.UBUNTU_PRO_TOKEN }}
+
       - name: Install openssl-fips
         run: |
-          # Debugging
-          set -x
+          pro enable fips-updates --assume-yes
 
-          # Exit immediately if a command exists with a non-zero status
-          set -e
+          apt-get install openssl-fips-module-3
+          openssl fipsinstall -out /usr/lib/ssl/fipsmodule.cnf -module /usr/lib/x86_64-linux-gnu/ossl-modules-3/fips.so
 
-          # Treat unset variables as an error when substituting.
-          set -u
-          
-          # Install openssl with fips enabled
-          cd /tmp
-          wget https://www.openssl.org/source/openssl-3.0.9.tar.gz
-          tar -xf openssl-3.0.9.tar.gz
-          cd openssl-3.0.9
-          ./Configure enable-fips
-          make
-          make install
-
-          ln -sf /usr/local/lib64/libcrypto.so.3 /lib/x86_64-linux-gnu/libcrypto.so.3
-          ln -sf /usr/local/lib64/libssl.so.3 /lib/x86_64-linux-gnu/libssl.so.3
-          
           # Config fips to be used by default
           # https://docs.openssl.org/master/man7/fips_module/#making-all-applications-use-the-fips-module-by-default
-          export OPENSSL_CNF="/usr/local/ssl/openssl.cnf"
-          export FIPSMODULE_CNF="/usr/local/ssl/fipsmodule.cnf"
+          export OPENSSL_CNF="/usr/lib/ssl/openssl.cnf"
+          export FIPSMODULE_CNF="/usr/lib/ssl/fipsmodule.cnf"
 
           sed -i "/^\[openssl_init\]/i\\.include ${FIPSMODULE_CNF}\n" "$OPENSSL_CNF"
           sed -i '/^providers = provider_sect/a\alg_section = algorithm_sect' "$OPENSSL_CNF"
@@ -74,28 +66,29 @@ jobs:
           openssl list -providers
 
       - name: Build erlang
+        id: build
         run: |
           set -eux
 
-          export DEBIAN_FRONTEND=noninteractive
+          export DEBIAN_FRONTEND="noninteractive"
 
           # Install build tools
           apt-get install -y build-essential devscripts equivs gnupg rsync git-buildpackage
                     
           # This was supposed to be in action/checkout@v4 but the action doesn't init .git
-          git clone --depth 1 --branch ${{ env.ERLANG_TAG_VERSION }} https://github.com/erlang/otp.git
-          git clone --branch ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }} https://github.com/rabbitmq/erlang-debian-package.git
+          git clone --depth 1 --branch ${{ env.ERLANG_TAG_VERSION }} https://github.com/medigateio/erlang-otp
+          git clone --branch ${{ env.ERLANG_DEBIAN_PACKAGE_TAG_VERSION }} https://github.com/medigateio/rabbitmq-erlang-debian-package
 
           # Checkout specific commit to be aligned with the otp version
-          cd erlang-debian-package
+          cd rabbitmq-erlang-debian-package
           git checkout $ERLANG_DEBIAN_PACKAGE_COMMIT
           cd ..
 
           dist_version=debian-$(cat /etc/debian_version)
-          cp -a erlang-debian-package/debian otp/
-          cd otp/
+          cp -a rabbitmq-erlang-debian-package/debian erlang-otp/
+          cd erlang-otp/
 
-          branch=erlang-debian-package-by-rabbitmq
+          branch=rabbitmq-erlang-debian-package-by-rabbitmq
           git checkout -b "$branch"
 
           # Configure git-buildpackage
